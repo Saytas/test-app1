@@ -7,8 +7,12 @@ from .forms import ContactForm, LoginForm, RegisterForm
 def home_page(request):
     context = {
         "title": "Hello World!",
-        "content": "Welcome to the home page"
+        "content": "Welcome to the home page",
     }
+
+    if request.user.is_authenticated():
+        context["premium_content"] = "PREMIUM!!!"
+
     return render(request, "home_page.html", context)
 
 def about_page(request):
@@ -62,7 +66,9 @@ def login_page(request):
             login(request, user)
             # Redirect to a success page
             # context["form"] = LoginForm()
-            return redirect("/login")
+
+            # Login goes to home_page
+            return redirect("/")
         else:
             # Return an "invalid login" error message
             print("Error!")
@@ -70,12 +76,15 @@ def login_page(request):
     return render(request, "auth/login.html", context)
 
 def register_page(request):
-    register = RegisterForm(request.POST or None)
+    form = RegisterForm(request.POST or None)
+    context = {
+        "form": form
+    }
 
-    if register.is_valid():
-        print(register.cleaned_data)
+    if form.is_valid():
+        print(form.cleaned_data)
 
-    return render(request, "auth/register.html", {})
+    return render(request, "auth/register.html", context)
 
 
 
